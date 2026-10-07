@@ -3,7 +3,8 @@
 Họ tên: Đinh Phúc Tuấn Nhật. MSSV: 23IT195.
 
 Ứng dụng dùng Node.js/Express, MongoDB Atlas và Handlebars.
-Database: `DB_23IT195`. Mã sách bắt đầu bằng `195`. VAT: `10%`.
+Database: `DB_23IT195`. Mã sách bắt đầu bằng `195`. VAT: `11%`.
+Thuế suất được tính động theo công thức: `VAT = (Chữ số cuối MSSV + 6)%`.
 
 Hai MongoClient độc lập: Read đọc sách/session; Write thêm sách và ghi/cập nhật/xóa session.
 Session được lưu ở Atlas, cookie chứa ID phiên. Giữ cùng secret khi chạy nhiều instance.
@@ -24,7 +25,7 @@ Biến môi trường: NODE_ENV, PORT, STUDENT_NAME, STUDENT_ID, SESSION_SECRET,
 MONGO_READ_URI, MONGO_WRITE_URI. Không commit .env.
 
 Mở http://localhost:3000/books. Kiểm tra http://localhost:3000/healthz.
-Thêm 195-B001, giá 100000: giá sau VAT phải là 110000.
+Thêm 195-B001, giá 100000: giá sau VAT phải là 111000.
 Thử mã sai/trùng, thử quyền trái phép của từng user, restart và chuyển instance.
 
 ## Triển khai và bằng chứng

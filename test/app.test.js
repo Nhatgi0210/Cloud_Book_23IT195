@@ -55,12 +55,23 @@ test('hai instance chia se session; validate tren server va render VAT dung', as
   }
   const first = await instance();
   const second = await instance();
+  const health = await fetch(first + '/healthz');
+  assert.equal(health.status, 200);
+  assert.deepEqual(await health.json(), { status: 'ok' });
+  assert.equal(db.sessions.size, 0);
+  const stylesheet = await fetch(first + '/style.css');
+  assert.equal(stylesheet.status, 200);
+  assert.match(await stylesheet.text(), /system-ui/);
+  const missing = await fetch(first + '/missing');
+  assert.equal(missing.status, 404);
+  assert.match(await missing.text(), /Quay về danh sách sách/);
+
   const response = await fetch(`${first}/books`);
   const html = await response.text();
   assert.equal(response.status, 200);
   assert.match(html, /Đinh Phúc Tuấn Nhật/);
   assert.match(html, /MSSV: 23IT195/);
-  assert.match(html, /VAT áp dụng: 10%/);
+  assert.match(html, /VAT áp dụng: 11%/);
   const cookie = response.headers.get('set-cookie').split(';')[0];
   const csrfToken = html.match(/name="csrfToken" value="([a-f0-9]+)"/)[1];
   const next = await fetch(`${second}/books`, { headers: { cookie } });
@@ -79,13 +90,16 @@ test('hai instance chia se session; validate tren server va render VAT dung', as
   assert.equal(db.books.length, 0);
   assert.equal((await post({ code: '195-B001', vatPercent: '0', priceAfterVat: '1' })).status, 303);
   assert.equal(db.books.length, 1);
-  assert.equal(db.books[0].priceAfterVat, 110000);
-  assert.equal(db.books[0].vatPercent, 10);
+  assert.equal(db.books[0].priceAfterVat, 111000);
+  assert.equal(db.books[0].vatPercent, 11);
   assert.equal((await post({ code: '195-B001' })).status, 409);
 
   const third = await instance();
   const resumed = await fetch(`${third}/books`, { headers: { cookie } });
-  assert.match(await resumed.text(), /Lượt xem trong phiên: 3/);
+  const resumedHtml = await resumed.text();
+  assert.match(resumedHtml, /Lượt xem trong phiên: 3/);
+  assert.match(resumedHtml, /Sách kiểm thử/);
+  assert.match(resumedHtml, /111\.000/);
   const csrfFailure = await post({ code: '195-B002', csrfToken: 'wrong' });
   assert.equal(csrfFailure.status, 403);
 });

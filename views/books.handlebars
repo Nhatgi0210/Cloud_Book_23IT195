@@ -1,0 +1,39 @@
+<section>
+  <h2>Thêm sách</h2>
+  <p>Mã sách bắt đầu bằng {{student.prefix}}. Giá sau VAT {{student.vatPercent}}% được tính khi lưu.</p>
+  <p>Thuế suất được tính động theo công thức: VAT = (Chữ số cuối MSSV + 6)%.</p>
+  {{#if error}}<p class="error" role="alert">{{error}}</p>{{/if}}
+  {{#if success}}<p class="success" role="status">{{success}}</p>{{/if}}
+  <form method="post" action="/books">
+    <input type="hidden" name="csrfToken" value="{{csrfToken}}">
+    <label>Mã sách
+      <input name="code" value="{{values.code}}" placeholder="{{student.prefix}}-B001" maxlength="50" pattern="[A-Za-z0-9-]{3,50}" required>
+    </label>
+    <label>Tên sách
+      <input name="title" value="{{values.title}}" maxlength="150" required>
+    </label>
+    <label>Tác giả
+      <input name="author" value="{{values.author}}" maxlength="100">
+    </label>
+    <label>Giá trước VAT (VND)
+      <input type="number" name="price" value="{{values.price}}" min="0" max="1000000000000" step="1" required>
+    </label>
+    <button type="submit">Thêm sách</button>
+  </form>
+</section>
+<section>
+  <h2>Danh sách sách</h2>
+  <p>Lượt xem trong phiên: {{visits}}</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Mã sách</th><th>Tên sách</th><th>Tác giả</th><th>Giá (VND)</th><th>VAT</th><th>Giá sau VAT (VND)</th></tr></thead>
+      <tbody>
+        {{#each books}}
+        <tr><td>{{code}}</td><td>{{title}}</td><td>{{author}}</td><td>{{money price}}</td><td>{{vatPercent}}%</td><td>{{money priceAfterVat}}</td></tr>
+        {{else}}
+        <tr><td colspan="6">Chưa có sách.</td></tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+</section>
